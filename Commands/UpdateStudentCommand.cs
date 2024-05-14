@@ -4,7 +4,7 @@ namespace ManageStudents.Commands
 {
     public class UpdateStudentCommand : IRequest<int>
     {
-        public int Id { get; set; }
+        public int Id { get; set;}
         public string StudentName { get; set; } = string.Empty;
         public string StudentEmail { get; set; } = string.Empty;
         public string StudentAddress { get; set; } = string.Empty;

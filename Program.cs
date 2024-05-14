@@ -2,6 +2,7 @@ using System.Reflection;
 using ManageStudents.Data;
 using ManageStudents.Repositories;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthentication(options => {
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie()
+.AddOpenIdConnect(options => {
+    options.ResponseType = builder.Configuration["Authentication:Cognito:ResponseType"]!;
+    options.MetadataAddress = builder.Configuration["Authentication:Cognito:MetadataAddress"]!;
+    options.ClientId = builder.Configuration["Authentication:Cognito:ClientId"]!;
+});
 
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 builder.Services.AddDbContext<ApplicationDbContext>();
@@ -26,6 +39,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
+
+app.UseAuthentication();
 
 app.Run();
 
